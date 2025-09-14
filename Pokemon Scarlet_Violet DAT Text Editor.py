@@ -143,28 +143,28 @@ class DATEditor:
                     self.current_lines[line_index] = new_text
             
     def edit_line(self, item):
-        # Получаем текущие значения
+        # Get current values
         values = self.tree.item(item, 'values')
         line_index = int(values[0])
         current_text = values[1]
         
-        # Создаём окно редактирования
+        # Create edit window
         edit_dialog = tk.Toplevel(self.root)
         edit_dialog.title(f"Edit Line {line_index}")
         edit_dialog.geometry("500x300")
         edit_dialog.transient(self.root)
         edit_dialog.grab_set()
         
-        # Настраиваем grid для корректного расширения
+        # Configure grid for proper expansion
         edit_dialog.grid_rowconfigure(0, weight=1)
         edit_dialog.grid_columnconfigure(0, weight=1)
         
-        # Текстовая область
+        # Text area
         text_area = ScrolledText(edit_dialog, wrap=tk.WORD)
         text_area.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         text_area.insert('1.0', current_text)
         
-        # Фрейм для кнопок
+        # Frame for buttons
         button_frame = ttk.Frame(edit_dialog)
         button_frame.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
         
@@ -174,7 +174,24 @@ class DATEditor:
             self.tree.item(item, values=(line_index, new_text))
             edit_dialog.destroy()
         
-        # Кнопки Save и Cancel
+        # Functions for copy and paste
+        def copy_text():
+            text_area.event_generate("<<Copy>>")
+        
+        def paste_text():
+            text_area.event_generate("<<Paste>>")
+        
+        # Copy and Paste buttons
+        copy_btn = ttk.Button(button_frame, text="Copy", command=copy_text)
+        copy_btn.pack(side=tk.LEFT, padx=5)
+        
+        paste_btn = ttk.Button(button_frame, text="Paste", command=paste_text)
+        paste_btn.pack(side=tk.LEFT, padx=5)
+        
+        # Spacer for right-aligning buttons
+        ttk.Frame(button_frame).pack(side=tk.LEFT, expand=True, fill=tk.X)
+        
+        # Save and Cancel buttons
         cancel_btn = ttk.Button(button_frame, text="Cancel", command=edit_dialog.destroy)
         cancel_btn.pack(side=tk.RIGHT, padx=5)
         
